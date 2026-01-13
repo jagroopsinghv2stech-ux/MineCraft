@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
-import World from "./world";
+import {World} from "./world";
 import Stats from 'stats.js';
 import { createUI } from "./ui";
 import { Player } from "./player";
@@ -8,7 +8,7 @@ import { Physics } from "./physics";
 
 console.log("Start");
 
-//Render Setup
+//!Render Setup
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -18,7 +18,7 @@ renderer.shadowMap.enabled=true;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap
 document.body.appendChild(renderer.domElement);
 
-//camera
+//!camera
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -27,32 +27,34 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.set(-32, 16, -32);
 
 
-//Orbit control
+//!Orbit control
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(16,0,16)
 controls.update()
 
-//scene
+//!scene
 const scene = new THREE.Scene();
 
-//World 
+//!World 
 const world=new World()
 world.generate()
 scene.add(world)
 
-//Physics
+
+//!Physics
 
 const physics=new Physics(scene)
 
 
-//Player
+//!Player
 const player=new Player(scene)
 
-//FPS
+//!FPS
 const stats=new Stats()
 document.body.append(stats.dom)
-//Lights
+
+//!Lights
 
 function setUpLights() {
   const sun = new THREE.DirectionalLight();
@@ -84,11 +86,16 @@ function animate() {
 
 
   physics.update(dt,player,world)
+  //! Update the Fps Stats 
+  stats.update()
+  player.updateBoundHelper()
   renderer.render(scene,player.controls.isLocked ? player.camera : camera);
-
+  world.update(player)
   prevoiusTime=currentTime;
 }
-// Resize
+
+
+//! Resize
 
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -97,9 +104,9 @@ window.addEventListener("resize", () => {
   player.camera.aspect = window.innerWidth / window.innerHeight;
   player.camera.updateProjectionMatrix();
 
+  renderer.setSize(window.innerWidth, window.innerHeight);   
 
 
-  renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.render(scene, camera);
 
   stats.update()
